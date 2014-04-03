@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PATH=$PATH:/usr/sbin:/sbin
+
 echo "installing network-manager Dependencies..."
 # DEP NETWORK-MANAGER
 apt-get -y install gcc-4.7
