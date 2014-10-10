@@ -2,6 +2,7 @@
 
 echo "installing network-manager Dependencies..."
 # DEP NETWORK-MANAGER
+apt-get -y install sudo
 apt-get -y install gcc-4.7
 apt-get -y install g++-4.7
 update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 40 --slave /usr/bin/g++ g++ /usr/bin/g++-4.7
