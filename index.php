@@ -1,19 +1,19 @@
 <? 
 /*
-	Copyright (C) 2013-2014  xtr4nge [_AT_] gmail.com
+    Copyright (C) 2013-2014 xtr4nge [_AT_] gmail.com
 
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */ 
 ?>
 <!DOCTYPE HTML>
@@ -26,7 +26,7 @@
 <link rel="stylesheet" href="../css/jquery-ui.css" />
 <link rel="stylesheet" href="../css/style.css" />
 <link rel="stylesheet" href="../../../style.css" />
-
+<link rel="icon" type="image/x-icon" href="../../img/favicon.ico"/>
 <script>
 $(function() {
     $( "#action" ).tabs();
@@ -44,8 +44,9 @@ $(function() {
 
 <?
 
-include "_info_.php";
 include "../../config/config.php";
+include "_info_.php";
+include "../../login_check.php";
 include "../../functions.php";
 
 // Checking POST & GET variables...
@@ -68,6 +69,13 @@ if ($logfile != "" and $action == "delete") {
     exec("$bin_danger \"$exec\"", $dump);
 }
 
+// SET MODE
+if ($_POST["change_mode"] == "1") {
+    $ss_mode = $service;
+    $exec = "/bin/sed -i 's/ss_mode.*/ss_mode = \\\"".$ss_mode."\\\";/g' _info_.php";
+    exec("$bin_danger \"" . $exec . "\"", $output);
+}
+
 ?>
 
 <div class="rounded-top" align="left"> &nbsp; <b><?=$mod_alias?></b> </div>
@@ -75,19 +83,22 @@ if ($logfile != "" and $action == "delete") {
 
     &nbsp;version <?=$mod_version?><br>
     <? 
-    if (file_exists("includes/nmcli")) { 
+    #if (file_exists("includes/nmcli")) {
+    if (file_exists("includes/NetworkManager/cli/src/nmcli")) { 
         echo "&nbsp;&nbsp; $mod_alias <font style='color:lime'>installed</font><br>";
     } else {
-		echo "&nbsp;&nbsp; $mod_alias <a href='includes/module_action.php?install=install_$mod_name' style='color:red'>install</a><br>";
+	echo "&nbsp;&nbsp; $mod_alias <a href='includes/module_action.php?install=install_$mod_name' style='color:red'>install</a><br>";
     } 
     ?>
     
     <?
     $ismoduleup = exec("$mod_isup");
     if ($ismoduleup != "") {
-        echo "&nbsp;&nbsp; $mod_alias  <font color=\"lime\"><b>enabled</b></font>.&nbsp; | <a href=\"includes/module_action.php?service=responder&action=stop&page=module\"><b>stop</b></a>";
+        #echo "&nbsp;&nbsp; $mod_alias  <font color=\"lime\"><b>enabled</b></font>.&nbsp; | <a href=\"includes/module_action.php?service=nmcli&action=stop&page=module\"><b>stop</b></a>";
+	echo "&nbsp;&nbsp; $mod_alias  <font color=\"lime\"><b>enabled</b></font> ";
     } else { 
-        echo "&nbsp;&nbsp; $mod_alias  <font color=\"red\"><b>disabled</b></font>. | <a href=\"includes/module_action.php?service=responder&action=start&page=module\"><b>start</b></a>"; 
+        #echo "&nbsp;&nbsp; $mod_alias  <font color=\"red\"><b>disabled</b></font>. | <a href=\"includes/module_action.php?service=nmcli&action=start&page=module\"><b>start</b></a>";
+	echo "&nbsp;&nbsp; $mod_alias  <font color=\"red\"><b>disabled</b></font> "; 
     }
     ?>
 
@@ -102,59 +113,16 @@ Loading, please wait...
 
 <div id="body" style="display:none;">
 
-
     <div id="result" class="module">
         <ul>
-            <li><a href="#result-1">Output</a></li>
-            <li><a href="#result-2">History</a></li>
+            <li><a href="#result-1">About</a></li>
         </ul>
-        
-        <!-- OUTPUT -->
 
-        <div id="result-1">
-            <form id="formLogs-Refresh" name="formLogs-Refresh" method="POST" autocomplete="off" action="index.php">
-            <input type="submit" value="refresh">
-            <br><br>
-            <?
-                if ($logfile != "" and $action == "view") {
-                    $filename = $mod_logs_history.$logfile.".log";
-                } else {
-                    $filename = $mod_logs;
-                }
-            
-                $data = open_file($filename);
-                
-                // REVERSE
-                //$data_array = explode("\n", $data);
-                //$data = implode("\n",array_reverse($data_array));
-                
-            ?>
-            <textarea id="output" class="module-content" style="font-family: courier;"><?=htmlspecialchars($data)?></textarea>
-            <input type="hidden" name="type" value="logs">
-            </form>
-            
-        </div>
-
-        <!-- HISTORY -->
-
-        <div id="result-2">
-            <input type="submit" value="refresh">
-            <br><br>
-            
-            <?
-            $logs = glob($mod_logs_history.'*.log');
-            print_r($a);
-
-            for ($i = 0; $i < count($logs); $i++) {
-                $filename = str_replace(".log","",str_replace($mod_logs_history,"",$logs[$i]));
-                echo "<a href='?logfile=".str_replace(".log","",str_replace($mod_logs_history,"",$logs[$i]))."&action=delete&tab=2'><b>x</b></a> ";
-                echo $filename . " | ";
-                echo "<a href='?logfile=".str_replace(".log","",str_replace($mod_logs_history,"",$logs[$i]))."&action=view'><b>view</b></a>";
-                echo "<br>";
-            }
-            ?>
-            
-        </div>
+        <div id="result-1" class="history">
+	    <? include "includes/about.php"; ?>
+	</div>
+	
+	<!-- END ABOUT -->
         
     </div>
 
