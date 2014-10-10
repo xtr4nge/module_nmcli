@@ -26,6 +26,7 @@ $bin_rm = "/bin/rm";
 $bin_route = "/sbin/route";
 $bin_perl = "/usr/bin/perl";
 $bin_sleep = "/bin/sleep";
+$bin_sudo = "/usr/bin/sudo";
 $bin_nmcli = "/usr/share/FruityWifi/www/modules/nmcli/includes/NetworkManager/cli/src/nmcli";
 
 # ISUP
