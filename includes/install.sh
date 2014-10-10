@@ -16,7 +16,7 @@ apt-get -y install libgudev-1.0-dev libnl-3-dev libnl-route-3-dev libnl-genl-3-d
 apt-get -y install uuid-dev
 
 echo "installing network-manager..."
-wget http://ftp.gnome.org/pub/GNOME/sources/NetworkManager/0.9/NetworkManager-0.9.8.8.tar.xz -o NetworkManager-0.9.8.8.tar.xz
+wget http://ftp.gnome.org/pub/GNOME/sources/NetworkManager/0.9/NetworkManager-0.9.8.8.tar.xz
 tar xvf NetworkManager-0.9.8.8.tar.xz
 mv NetworkManager-0.9.8.8 NetworkManager
 cd NetworkManager
