@@ -1,6 +1,6 @@
 <? 
 /*
-	Copyright (C) 2013-2014  xtr4nge [_AT_] gmail.com
+	Copyright (C) 2013-2014 xtr4nge [_AT_] gmail.com
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -18,9 +18,9 @@
 ?>
 <?
 //include "../login_check.php";
+include "../../../config/config.php";
 include "../_info_.php";
-include "/usr/share/FruityWifi/www/config/config.php";
-include "/usr/share/FruityWifi/www/functions.php";
+include "../../../functions.php";
 
 // Checking POST & GET variables...
 if ($regex == 1) {
@@ -44,39 +44,50 @@ if($service == "nmcli" and $ss_mode == "mode_supplicant") {
         // COPY LOG
         if ( 0 < filesize( $mod_logs ) ) {
             $exec = "$bin_cp $mod_logs $mod_logs_history/".gmdate("Ymd-H-i-s").".log";
-            exec("$bin_danger \"$exec\"" );
+            //exec("$bin_danger \"$exec\"" ); //DEPRECATED
+            exec_fruitywifi($exec);
             
             $exec = "$bin_echo '' > $mod_logs";
-            exec("$bin_danger \"$exec\"" );
+            //exec("$bin_danger \"$exec\"" ); //DEPRECATED
+            exec_fruitywifi($exec);
         }
 		
         $exec = "$bin_ifconfig $iface_supplicant up";
-        exec("$bin_danger \"" . $exec . "\"" );
+        //exec("$bin_danger \"" . $exec . "\"" ); //DEPRECATED
+        exec_fruitywifi($exec);
         $exec = "./nmcli -n d disconnect iface $iface_supplicant";
-        exec("$bin_danger \"" . $exec . "\"" );
+        //exec("$bin_danger \"" . $exec . "\"" ); //DEPRECATED
+        exec_fruitywifi($exec);
         $exec = "./nmcli -n c delete id nmcli_raspberry_wifi";
-        exec("$bin_danger \"" . $exec . "\"" );
+        //exec("$bin_danger \"" . $exec . "\"" ); //DEPRECATED
+        exec_fruitywifi($exec);
         		
         $exec = "$bin_iwlist $iface_supplicant scan";
-        exec("$bin_danger \"" . $exec . "\"" );
-
+        //exec("$bin_danger \"" . $exec . "\"" ); //DEPRECATED
+        exec_fruitywifi($exec);
+        
         $exec = "./nmcli -n dev wifi connect '$supplicant_ssid' password '$supplicant_psk' iface $iface_supplicant name nmcli_raspberry_wifi";
-        exec("$bin_danger \"" . $exec . "\"" );
+        //exec("$bin_danger \"" . $exec . "\"" ); //DEPRECATED
+        exec_fruitywifi($exec);
         
     } else if($action == "stop") {
         // STOP MODULE
         $exec = "./nmcli -n d disconnect iface $iface_supplicant";
-        exec("$bin_danger \"" . $exec . "\"" );
+        //exec("$bin_danger \"" . $exec . "\"" ); //DEPRECATED
+        exec_fruitywifi($exec);
         $exec = "./nmcli -n c delete id nmcli_raspberry_wifi";
-        exec("$bin_danger \"" . $exec . "\"" );
-		
+        //exec("$bin_danger \"" . $exec . "\"" ); //DEPRECATED
+		exec_fruitywifi($exec);
+        
         // COPY LOG
         if ( 0 < filesize( $mod_logs ) ) {
             $exec = "$bin_cp $mod_logs $mod_logs_history/".gmdate("Ymd-H-i-s").".log";
-            exec("$bin_danger \"$exec\"" );
+            //exec("$bin_danger \"$exec\"" ); //DEPRECATED
+            exec_fruitywifi($exec);
             
             $exec = "$bin_echo '' > $mod_logs";
-            exec("$bin_danger \"$exec\"" );
+            //exec("$bin_danger \"$exec\"" ); //DEPRECATED
+            exec_fruitywifi($exec);
         }
 
     }
@@ -86,20 +97,20 @@ if($service == "nmcli" and $ss_mode == "mode_supplicant") {
 	if ($action == "start") {
 		
 		$exec = "$bin_cp FruityWifi_Mobile /etc/NetworkManager/system-connections/";
-		exec("$bin_danger \"$exec\"" );
-		echo $exec . "<br>";
-		//exit;
+		//exec("$bin_danger \"$exec\"" ); //DEPRECATED
+        exec_fruitywifi($exec);
 		
 		$exec = "$bin_sleep 2";
-		exec("$bin_danger \"$exec\"" );
+		//exec("$bin_danger \"$exec\"" ); //DEPRECATED
+        exec_fruitywifi($exec);
 		
 		$exec = "$mod_path/includes/nmcli -t nm wwan on";
-		exec("$bin_danger \"$exec\"" );
-		echo $exec . "<br>";
+		//exec("$bin_danger \"$exec\"" ); //DEPRECATED
+        exec_fruitywifi($exec);
 		
 		$exec = "$mod_path/includes/nmcli -t con up id FruityWifi_Mobile >/dev/null &";
-		exec("$bin_danger \"$exec\"" );
-		echo $exec . "<br>";
+		//exec("$bin_danger \"$exec\"" ); //DERECATED
+        exec_fruitywifi($exec);
 		
 		//header('Location: ../../action.php?page='.$mod_name.'&wait=4');
 		//exit;
@@ -108,14 +119,14 @@ if($service == "nmcli" and $ss_mode == "mode_supplicant") {
 	} else if ($action == "stop") {
 		
 		$exec = "$mod_path/includes/nmcli -t con down id FruityWifi_Mobile >/dev/null &";
-		//echo $exec . "<br>";
-		exec("$bin_danger \"$exec\"" );
+		//exec("$bin_danger \"$exec\"" ); //DEPRECATED
+        exec_fruitywifi($exec);
 		$exec = "$mod_path -t nm wwan off";
-		//echo $exec . "<br>";
-		exec("$bin_danger \"$exec\"" );
+		//exec("$bin_danger \"$exec\"" ); //DEPRECATED
+        exec_fruitywifi($exec);
 		$exec = "$mod_path/includes/nmcli -n c delete id FruityWifi_Mobile";
-		//echo $exec . "<br>";
-        exec("$bin_danger \"" . $exec . "\"" );
+        //exec("$bin_danger \"" . $exec . "\"" ); //DEPRECATED
+        exec_fruitywifi($exec);
 		
 	}
 }
@@ -123,10 +134,12 @@ if($service == "nmcli" and $ss_mode == "mode_supplicant") {
 if ($install == "install_$mod_name") {
 
     $exec = "$bin_chmod 755 install.sh";
-    exec("$bin_danger \"$exec\"" );
-
-    $exec = "$bin_sudo ./install.sh > /usr/share/FruityWifi/logs/install.txt &";
-    exec("$bin_danger \"$exec\"" );
+    //exec("$bin_danger \"$exec\"" ); //DEPRECATED
+    exec_fruitywifi($exec);
+    
+    $exec = "$bin_sudo ./install.sh > $log_path/install.txt &";
+    //exec("$bin_danger \"$exec\"" ); //DEPRECATED
+    exec_fruitywifi($exec);
 
     header('Location: ../../install.php?module='.$mod_name);
     exit;
